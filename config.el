@@ -52,3 +52,46 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+
+;;; Configs
+(setq
+ ;; mac
+ mac-command-modifier 'meta
+ mac-option-modifier 'super
+ ;; avy keys for jump buffer
+ avy-keys (number-sequence ?a ?z)
+ frog-menu-avy-keys (number-sequence ?a ?z)
+ ;; project
+ projectile-project-search-path '("~/src")
+ ;; python
+ pyvenv-virtual-env-name 'venv
+ ;; org
+ org-default-notes-file "~/GoogleDrive/doc/GTD.org"
+ org-agenda-files '("~/GoogleDrive/doc/")
+ org-tag-alist '(("@work" . ?w) ("@me" . ?m))
+ org-capture-templates '(("t" "TODO" entry (file+headline "" "Tasks") "* TODO %?\n %i\n")
+                         ("n" "NOTE" entry (file+headline "" "Notes") "* NOTE - %?\n %i\n %a")
+                         ("j" "Journal" entry (file+datetree "~/GoogleDrive/doc/journal.org")
+                          "* %U\n%?"))
+ ;; others
+ create-lockfiles nil
+ debug-on-error t)
+
+;;; Keys
+(global-set-key (kbd "M-`") 'evil-escape)
+(global-set-key (kbd "C-c c") 'org-capture)
+(global-set-key (kbd "C-c C-g") 'evil-force-normal-state)
+(map! :leader
+      :desc "just-one-space"
+      "m o" #'just-one-space)
+(map! :leader
+      :desc "frog-jump-buffer"
+      "." #'frog-jump-buffer)
+;;; Hooks
+;; automatically save buffers when focus out or switch
+(add-hook 'focus-out-hook (lambda () (save-some-buffers t)))
+(defadvice switch-to-buffer (before save-buffer-now activate)
+  (when buffer-file-name (save-buffer)))
+(defadvice other-window (before other-window-now activate)
+  (when buffer-file-name (save-buffer)))
+
