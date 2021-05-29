@@ -20,8 +20,8 @@
 ;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
 ;; font string. You generally only need these two:
 (setq doom-font (font-spec :family "Fira Code"
-                           :size 22)
-      doom-variable-pitch-font (font-spec :family "Fira Code" :size 16))
+                           :size 20)
+      doom-variable-pitch-font (font-spec :family "Fira Code" :size 14))
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
@@ -79,6 +79,8 @@
 
 ;;; Keys
 (global-set-key (kbd "M-`") 'evil-escape)
+(global-set-key (kbd "M-p") 'evil-jump-backward)
+(global-set-key (kbd "M-n") 'evil-jump-forward)
 (global-set-key (kbd "C-c c") 'org-capture)
 (global-set-key (kbd "C-c C-g") 'evil-force-normal-state)
 (map! :leader
@@ -109,7 +111,8 @@
 ;; dap mode for debugger
 (after! dap-mode
   (setq dap-python-debugger 'debugpy))
-(after! dap-mode
+; override dap python function to ensure venv works
+(after! dap-python
   (defun dap-python--pyenv-executable-find (command) (executable-find command)))
 (after! dap-mode
   (map! :map dap-mode-map
@@ -142,3 +145,8 @@
         :desc "dap breakpoint condition"   "c" #'dap-breakpoint-condition
         :desc "dap breakpoint hit count"   "h" #'dap-breakpoint-hit-condition
         :desc "dap breakpoint log message" "l" #'dap-breakpoint-log-message))
+
+;; markdown
+(map! :map markdown-mode-map
+      :localleader
+      :desc "follow-link-at-point" "f" #'markdown-follow-link-at-point)

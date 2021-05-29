@@ -50,3 +50,4 @@
 ;(unpin! t)
 
 (package! frog-jump-buffer)
+(package! protobuf-mode)
