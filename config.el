@@ -65,14 +65,6 @@
  frog-menu-avy-keys (number-sequence ?a ?z)
  ;; project
  projectile-project-search-path '("~/src")
- ;; org
- org-default-notes-file "~/GoogleDrive/doc/GTD.org"
- org-agenda-files '("~/GoogleDrive/doc/")
- org-tag-alist '(("@work" . ?w) ("@me" . ?m))
- org-capture-templates '(("t" "TODO" entry (file+headline "" "Tasks") "* TODO %?\n %i\n")
-                         ("n" "NOTE" entry (file+headline "" "Notes") "* NOTE - %?\n %i\n %a")
-                         ("j" "Journal" entry (file+datetree "~/GoogleDrive/doc/journal.org")
-                          "* %U\n%?"))
  ;; others
  create-lockfiles nil
  debug-on-error t)
@@ -89,6 +81,13 @@
 (map! :leader
       :desc "frog-jump-buffer"
       "." #'frog-jump-buffer)
+(map! :leader
+      :desc "lsp-ui-doc-glance"
+      "c g" #'lsp-ui-doc-glance)
+(map! :leader
+      :desc "lsp-describe-thing-at-point"
+      "c h" #'lsp-describe-thing-at-point)
+
 ;;; Hooks
 ;; automatically save buffers when focus out or switch
 (add-hook 'focus-out-hook (lambda () (save-some-buffers t)))
@@ -150,3 +149,13 @@
 (map! :map markdown-mode-map
       :localleader
       :desc "follow-link-at-point" "f" #'markdown-follow-link-at-point)
+
+;; org
+(after! org (setq org-log-done "time"
+                  org-default-notes-file "~/GoogleDrive/doc/GTD.org"
+                  org-agenda-files '("~/GoogleDrive/doc/")
+                  org-tag-alist '(("@work" . ?w) ("@me" . ?m))
+                  org-capture-templates '(("t" "TODO" entry (file+headline "" "Tasks") "* TODO %?\n %i\n")
+                                          ("n" "NOTE" entry (file+headline "" "Notes") "* NOTE - %?\n %i\n %a")
+                                          ("j" "Journal" entry (file+datetree "~/GoogleDrive/doc/journal.org")
+                                           "* %U - %^{heading}\n%?"))))
