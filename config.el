@@ -109,7 +109,17 @@
 
 ;; dap mode for debugger
 (after! dap-mode
-  (setq dap-python-debugger 'debugpy))
+  (setq dap-python-debugger 'debugpy
+        ;; add `justMyCode: false' to debugpy, so that it will step in libirary code
+        dap-debug-template-configurations (mapcar
+                                           (lambda (conf)
+                                             (progn
+                                               (add-to-list 'conf :justMyCode t)
+                                               (add-to-list 'conf :json-false t))
+                                             )
+                                           dap-debug-template-configurations)
+        ))
+
 ; override dap python function to ensure venv works
 (after! dap-python
   (defun dap-python--pyenv-executable-find (command) (executable-find command)))
