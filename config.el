@@ -65,6 +65,9 @@
  frog-menu-avy-keys (number-sequence ?a ?z)
  ;; project
  projectile-project-search-path '("~/src")
+ ;; ein
+ ein:output-area-inlined-images t
+ ein:worksheet-enable-undo t
  ;; others
  create-lockfiles nil
  debug-on-error t)
@@ -89,6 +92,9 @@
       "c h" #'lsp-describe-thing-at-point)
 
 ;;; Hooks
+;; enable undo when evil
+(after! evil-mode
+  (add-hook ’evil-local-mode-hook ’turn-on-undo-tree-mode))
 ;; automatically save buffers when focus out or switch
 (add-hook 'focus-out-hook (lambda () (save-some-buffers t)))
 (defadvice switch-to-buffer (before save-buffer-now activate)
@@ -107,6 +113,15 @@
          (pyvenv-activate venv-path))))))
 (add-hook 'python-mode-hook 'pyvenv-autoload)
 
+;; lsp
+(after! lsp-mode
+  (setq lsp-file-watch-ignored-directories (cons
+                                            "[/\\\\]\\.venv\\'"
+                                            (cons
+                                             "[/\\\\]\\venv\\'"
+                                             lsp-file-watch-ignored-directories))
+        ))
+
 ;; dap mode for debugger
 (after! dap-mode
   (setq dap-python-debugger 'debugpy
@@ -123,6 +138,17 @@
 ; override dap python function to ensure venv works
 (after! dap-python
   (defun dap-python--pyenv-executable-find (command) (executable-find command)))
+
+; rust
+(after! dap-mode
+  (dap-register-debug-template "Rust::GDB Run Configuration"
+                             (list :type "gdb"
+                                   :request "launch"
+                                   :name "GDB::Run"
+                                   :gdbpath "rust-gdb"
+                                   :target nil
+                                   :cwd nil)))
+
 (after! dap-mode
   (map! :map dap-mode-map
         :leader
