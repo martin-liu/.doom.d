@@ -194,4 +194,6 @@
                   org-capture-templates '(("t" "TODO" entry (file+headline "" "Tasks") "* TODO %?\n %i\n")
                                           ("n" "NOTE" entry (file+headline "" "Notes") "* NOTE - %?\n %i\n %a")
                                           ("j" "Journal" entry (file+datetree "~/GoogleDrive/doc/journal.org")
-                                           "* %U - %^{heading}\n%?"))))
+                                           "* %U - %^{heading}\n%?"))
+                  org-roam-directory "~/martin/code/my/learning/notes/roam"
+                  ))
