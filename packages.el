@@ -51,3 +51,7 @@
 
 (package! frog-jump-buffer)
 (package! protobuf-mode)
+(package! org-fragtog)
+;; copilot
+(package! copilot
+  :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))

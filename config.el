@@ -76,6 +76,8 @@
 (global-set-key (kbd "M-`") 'evil-escape)
 (global-set-key (kbd "M-p") 'evil-jump-backward)
 (global-set-key (kbd "M-n") 'evil-jump-forward)
+(global-set-key (kbd "C-M-f") 'end-of-defun)
+(global-set-key (kbd "C-M-b") 'beginning-of-defun)
 (global-set-key (kbd "C-c c") 'org-capture)
 (global-set-key (kbd "C-c C-g") 'evil-force-normal-state)
 (map! :leader
@@ -197,3 +199,15 @@
                                            "* %U - %^{heading}\n%?"))
                   org-roam-directory "~/martin/code/my/learning/notes/roam"
                   ))
+;; fragtog auto do latex preview in org
+(after! org (add-hook 'org-mode-hook 'org-fragtog-mode))
+
+;; Github Copilot
+;; accept completion from copilot and fallback to company
+(use-package! copilot
+  :hook (prog-mode . copilot-mode)
+  :bind (("C-TAB" . 'copilot-accept-completion-by-word)
+         ("C-<tab>" . 'copilot-accept-completion-by-word)
+         :map copilot-completion-map
+         ("<tab>" . 'copilot-accept-completion)
+         ("TAB" . 'copilot-accept-completion)))
