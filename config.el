@@ -71,6 +71,7 @@
  ;; others
  create-lockfiles nil
  debug-on-error t)
+(menu-bar-mode -1)
 
 ;;; Keys
 (global-set-key (kbd "M-`") 'evil-escape)
@@ -141,16 +142,7 @@
 (after! dap-python
   (defun dap-python--pyenv-executable-find (command) (executable-find command)))
 
-; rust
-(after! dap-mode
-  (dap-register-debug-template "Rust::GDB Run Configuration"
-                             (list :type "gdb"
-                                   :request "launch"
-                                   :name "GDB::Run"
-                                   :gdbpath "rust-gdb"
-                                   :target nil
-                                   :cwd nil)))
-
+; Rust
 (after! dap-mode
   (map! :map dap-mode-map
         :leader
@@ -181,7 +173,17 @@
         :desc "dap breakpoint toggle"      "b" #'dap-breakpoint-toggle
         :desc "dap breakpoint condition"   "c" #'dap-breakpoint-condition
         :desc "dap breakpoint hit count"   "h" #'dap-breakpoint-hit-condition
-        :desc "dap breakpoint log message" "l" #'dap-breakpoint-log-message))
+        :desc "dap breakpoint log message" "l" #'dap-breakpoint-log-message)
+
+  ;; (require 'dap-codelldb)
+  ;; (dap-codelldb-setup)
+  ;; (dap-register-debug-template "Rust::CodeLLDB Run Configuration"
+  ;;                              (list :type "lldb"
+  ;;                                    :request "launch"
+  ;;                                    :name "CodeLLDB::Run"
+  ;;                                    :program ""
+  ;;                                    :cargo (list :args '("test" "--no-run"))))
+  )
 
 ;; markdown
 (map! :map markdown-mode-map
@@ -198,6 +200,7 @@
                                           ("j" "Journal" entry (file+datetree "~/GoogleDrive/doc/journal.org")
                                            "* %U - %^{heading}\n%?"))
                   org-roam-directory "~/martin/code/my/learning/notes/roam"
+                  org-roam-graph-executable "neato"
                   ))
 ;; fragtog auto do latex preview in org
 (after! org (add-hook 'org-mode-hook 'org-fragtog-mode))
