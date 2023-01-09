@@ -55,6 +55,7 @@
 
 ;;; Configs
 (setq
+ byte-compile-warnings '(not docstrings obsolete)
  doom-localleader-key ","
  doom-localleader-alt-key "M-,"
  ;; mac
@@ -98,6 +99,8 @@
 ;; enable undo when evil
 (after! evil-mode
   (add-hook ’evil-local-mode-hook ’turn-on-undo-tree-mode))
+(global-evil-matchit-mode 1)
+
 ;; automatically save buffers when focus out or switch
 (add-hook 'focus-out-hook (lambda () (save-some-buffers t)))
 (defadvice switch-to-buffer (before save-buffer-now activate)
