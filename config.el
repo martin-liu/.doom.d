@@ -204,6 +204,7 @@
                                            "* %U - %^{heading}\n%?"))
                   org-roam-directory "~/martin/code/my/learning/notes/roam"
                   org-roam-graph-executable "neato"
+                  org-roam-database-connector 'sqlite-builtin ; use emacs 29 built-in sqlite
                   ))
 ;; fragtog auto do latex preview in org
 (after! org (add-hook 'org-mode-hook 'org-fragtog-mode))

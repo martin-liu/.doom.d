@@ -53,6 +53,7 @@
 (package! protobuf-mode)
 (package! org-fragtog)
 (package! evil-matchit)
+(package! emacsql-sqlite-builtin)
 ;; copilot
 (package! copilot
   :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))
