@@ -54,6 +54,7 @@
 (package! org-fragtog)
 (package! evil-matchit)
 (package! emacsql-sqlite-builtin)
+(package! leetcode)
 ;; copilot
 (package! copilot
   :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))

@@ -118,6 +118,7 @@
        (when (f-exists? venv-path)
          (pyvenv-activate venv-path))))))
 (add-hook 'python-mode-hook 'pyvenv-autoload)
+(add-hook 'projectile-after-switch-project-hook 'pyvenv-autoload)
 
 ;; lsp
 (after! lsp-mode
@@ -218,3 +219,8 @@
          :map copilot-completion-map
          ("<tab>" . 'copilot-accept-completion)
          ("TAB" . 'copilot-accept-completion)))
+
+;; leetcode
+(setq leetcode-prefer-language "python3")
+(setq leetcode-save-solutions t)
+(setq leetcode-directory "~/martin/code/my/leetcode/src/main/python/")
