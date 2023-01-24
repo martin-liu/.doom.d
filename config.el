@@ -119,6 +119,7 @@
          (pyvenv-activate venv-path))))))
 (add-hook 'python-mode-hook 'pyvenv-autoload)
 (add-hook 'projectile-after-switch-project-hook 'pyvenv-autoload)
+;(add-hook 'doom-switch-buffer-hook 'pyvenv-autoload)
 
 ;; lsp
 (after! lsp-mode
