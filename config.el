@@ -64,6 +64,8 @@
  ;; avy keys for jump buffer
  avy-keys (number-sequence ?a ?z)
  frog-menu-avy-keys (number-sequence ?a ?z)
+ ;; magit
+ forge-database-connector 'sqlite-builtin
  ;; project
  projectile-project-search-path '("~/src")
  ;; ein
@@ -107,6 +109,10 @@
   (when buffer-file-name (save-buffer)))
 (defadvice other-window (before other-window-now activate)
   (when buffer-file-name (save-buffer)))
+
+;; set auth source
+(after! auth-source
+  (pushnew! auth-sources "~/.netrc"))
 
 ;; autoload python virtual environments
 ;; https://github.com/jorgenschaefer/pyvenv/issues/51#issuecomment-474785730
