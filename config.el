@@ -64,8 +64,6 @@
  ;; avy keys for jump buffer
  avy-keys (number-sequence ?a ?z)
  frog-menu-avy-keys (number-sequence ?a ?z)
- ;; magit
- forge-database-connector 'sqlite-builtin
  ;; project
  projectile-project-search-path '("~/src")
  ;; ein
@@ -110,7 +108,19 @@
 (defadvice other-window (before other-window-now activate)
   (when buffer-file-name (save-buffer)))
 
-;; set auth source
+;; magit
+;; code review
+(setq
+ code-review-auth-login-marker 'forge
+ forge-database-connector 'sqlite-builtin
+ code-review-fill-column 80
+ code-review-new-buffer-window-strategy #'switch-to-buffer
+ )
+(add-hook 'code-review-mode-hook
+          (lambda ()
+            ;; include *Code-Review* buffer into current workspace
+            (persp-add-buffer (current-buffer))))
+;; set auth source for magit forge
 (after! auth-source
   (pushnew! auth-sources "~/.netrc"))
 
