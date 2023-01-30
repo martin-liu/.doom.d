@@ -49,6 +49,11 @@
 ;; ...Or *all* packages (NOT RECOMMENDED; will likely break things)
 ;(unpin! t)
 
+;; override doom's package pinning
+(package! pdf-tools :pin "bc2ba117e8c3196ff9adf0da4fa1e63a8da3d7c8")
+(package! code-review :pin "26f426e99221a1f9356aabf874513e9105b68140")
+
+;; Custom packages
 (package! frog-jump-buffer)
 (package! protobuf-mode)
 (package! org-fragtog)
