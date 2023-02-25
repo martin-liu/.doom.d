@@ -17,7 +17,7 @@
 (defvar native-comp-deferred-compilation-deny-list nil)
 
 (doom! :input
-       chinese
+       ;;chinese
        ;;japanese
        ;;layout            ; auie,ctsrnm is the superior home row
 
