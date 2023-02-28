@@ -50,10 +50,11 @@
 ;(unpin! t)
 
 ;; override doom's package pinning
-(package! pdf-tools :pin "bc2ba117e8c3196ff9adf0da4fa1e63a8da3d7c8")
-(package! code-review :pin "26f426e99221a1f9356aabf874513e9105b68140")
+(unpin! pdf-tools code-review)
+(package! closql :pin "f27be13a834e03db76bceb3b5b50a243cc50d639")
 
 ;; Custom packages
+(package! docker-tramp) ;; TODO: remove since this is for compatibility with some packages
 (package! frog-jump-buffer)
 (package! protobuf-mode)
 (package! org-fragtog)

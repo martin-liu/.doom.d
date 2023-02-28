@@ -163,6 +163,10 @@
 (after! dap-python
   (defun dap-python--pyenv-executable-find (command) (executable-find command)))
 
+; Astro
+;; use rjsx-mode for .astro files
+(add-to-list 'auto-mode-alist '("\\.astro\\'" . rjsx-mode))
+
 ; Rust
 (after! dap-mode
   (map! :map dap-mode-map
