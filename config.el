@@ -227,6 +227,7 @@
                   org-roam-directory "~/martin/code/my/learning/notes/roam"
                   org-roam-graph-executable "neato"
                   org-roam-database-connector 'sqlite-builtin ; use emacs 29 built-in sqlite
+                  org-startup-with-inline-images t
                   ))
 ;; fragtog auto do latex preview in org
 (after! org (add-hook 'org-mode-hook 'org-fragtog-mode))
@@ -234,14 +235,16 @@
 ;; Github Copilot
 ;; accept completion from copilot and fallback to company
 (use-package! copilot
-  :hook (prog-mode . copilot-mode)
+  :hook ((prog-mode . copilot-mode)
+         (org-mode . copilot-mode))
   :bind (("s-TAB" . 'copilot-accept-completion-by-word)
          ("s-<tab>" . 'copilot-accept-completion-by-word)
          :map copilot-completion-map
          ("<tab>" . 'copilot-accept-completion)
          ("TAB" . 'copilot-accept-completion)))
 
+
 ;; leetcode
 (setq leetcode-prefer-language "python3")
 (setq leetcode-save-solutions t)
-(setq leetcode-directory "~/martin/code/my/leetcode/src/main/python/")
+(setq leetcode-directory "~/martin/code/my/leetcode/leetcode/")
