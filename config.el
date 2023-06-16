@@ -130,9 +130,10 @@
   "Activates pyvenv version if venv directory exists."
   (f-traverse-upwards
    (lambda (path)
-     (let ((venv-path (f-expand "venv" path)))
-       (when (f-exists? venv-path)
-         (pyvenv-activate venv-path))))))
+     (let ((venv-path (f-expand "venv" path))
+           (dotvenv-path (f-expand ".venv" path)))
+       (cond ((f-exists? venv-path) (pyvenv-activate venv-path))
+             ((f-exists? dotvenv-path) (pyvenv-activate dotvenv-path)))))))
 (add-hook 'python-mode-hook 'pyvenv-autoload)
 (add-hook 'projectile-after-switch-project-hook 'pyvenv-autoload)
 ;(add-hook 'doom-switch-buffer-hook 'pyvenv-autoload)
