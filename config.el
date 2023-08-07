@@ -69,6 +69,8 @@
  ;; ein
  ein:output-area-inlined-images t
  ein:worksheet-enable-undo t
+ ;; for jupyterlab > 3.0, this should be set to "notebook" when using notebook
+ ein:jupyter-server-use-subcommand "server"
  ;; others
  create-lockfiles nil
  debug-on-error t)
