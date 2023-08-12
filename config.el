@@ -220,12 +220,12 @@
 
 ;; org
 (after! org (setq org-log-done "time"
-                  org-default-notes-file "~/GoogleDrive/doc/GTD.org"
-                  org-agenda-files '("~/GoogleDrive/doc/")
+                  org-default-notes-file "~/Google Drive/My Drive/doc/GTD.org"
+                  org-agenda-files '("~/Google Drive/My Drive/doc/")
                   org-tag-alist '(("@work" . ?w) ("@me" . ?m))
                   org-capture-templates '(("t" "TODO" entry (file+headline "" "Tasks") "* TODO %?\n %i\n")
                                           ("n" "NOTE" entry (file+headline "" "Notes") "* NOTE - %?\n %i\n %a")
-                                          ("j" "Journal" entry (file+datetree "~/GoogleDrive/doc/journal.org")
+                                          ("j" "Journal" entry (file+datetree "~/Google Drive/My Drive/doc/journal.org")
                                            "* %U - %^{heading}\n%?"))
                   org-roam-directory "~/martin/code/my/learning/notes/roam"
                   org-roam-graph-executable "neato"
@@ -251,3 +251,16 @@
 (setq leetcode-prefer-language "python3")
 (setq leetcode-save-solutions t)
 (setq leetcode-directory "~/martin/code/my/leetcode/leetcode/")
+
+
+;; pdf view
+(defun pdf-view-zoom-center ()
+  "Zoom the pdf view and center the view."
+  (interactive)
+  (pdf-view-fit-width-to-window)
+  (pdf-view-enlarge 1.25)
+  (pdf-view-center-in-window))
+(after! pdf-tools
+  (map! :leader
+        :desc "zoom center"
+        "m c" #'pdf-view-zoom-center))
