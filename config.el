@@ -239,7 +239,9 @@
 ;; accept completion from copilot and fallback to company
 (use-package! copilot
   :hook ((prog-mode . copilot-mode)
-         (org-mode . copilot-mode))
+         (org-mode . copilot-mode)
+         (markdown-mode . copilot-mode)
+         (gfm-mode . copilot-mode))
   :bind (("s-TAB" . 'copilot-accept-completion-by-word)
          ("s-<tab>" . 'copilot-accept-completion-by-word)
          :map copilot-completion-map
