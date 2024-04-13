@@ -64,6 +64,8 @@
  ;; avy keys for jump buffer
  avy-keys (number-sequence ?a ?z)
  frog-menu-avy-keys (number-sequence ?a ?z)
+ ;; dired
+ dired-dwim-target t
  ;; project
  projectile-project-search-path '("~/src")
  ;; ein
@@ -80,7 +82,7 @@
 (global-set-key (kbd "M-`") 'evil-escape)
 (global-set-key (kbd "M-p") 'evil-jump-backward)
 (global-set-key (kbd "M-n") 'evil-jump-forward)
-(global-set-key (kbd "C-M-f") 'end-of-defun)
+(global-set-key (kbd "C-M-e") 'end-of-defun)
 (global-set-key (kbd "C-M-b") 'beginning-of-defun)
 (global-set-key (kbd "C-c c") 'org-capture)
 (global-set-key (kbd "C-c C-g") 'evil-force-normal-state)
@@ -248,6 +250,15 @@
          ("<tab>" . 'copilot-accept-completion)
          ("TAB" . 'copilot-accept-completion)))
 
+;; gptel
+(use-package! gptel
+ :config
+ (setq! gptel-model "gpt-4-turbo-preview"))
+(after! gptel
+  (map! :leader
+        :desc "gptel-menu" "m g" #'gptel-menu
+        :desc "gptel-send" "m s" #'gptel-send
+        ))
 
 ;; leetcode
 (setq leetcode-prefer-language "python3")

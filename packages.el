@@ -52,6 +52,9 @@
 ;; override doom's package pinning
 (unpin! pdf-tools code-review)
 
+;; override doom's package recipe
+(package! protobuf-mode :recipe (:nonrecursive t))
+
 ;; Custom packages
 (package! frog-jump-buffer)
 (package! protobuf-mode)
@@ -62,3 +65,5 @@
 ;; copilot
 (package! copilot
   :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))
+;; llm
+(package! gptel)
