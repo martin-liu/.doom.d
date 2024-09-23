@@ -60,7 +60,6 @@
 (package! protobuf-mode)
 (package! org-fragtog)
 (package! evil-matchit)
-(package! emacsql-sqlite-builtin)
 (package! leetcode)
 ;; copilot
 (package! copilot

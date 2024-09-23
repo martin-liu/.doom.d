@@ -149,6 +149,7 @@
                                             (cons
                                              "[/\\\\]\\venv\\'"
                                              lsp-file-watch-ignored-directories))
+        lsp-file-watch-threshold 2000
         ))
 
 ;; dap mode for debugger
@@ -253,11 +254,12 @@
 ;; gptel
 (use-package! gptel
  :config
- (setq! gptel-model "gpt-4-turbo-preview"))
+ (setq! gptel-model "gpt-4o"))
 (after! gptel
   (map! :leader
         :desc "gptel-menu" "m g" #'gptel-menu
         :desc "gptel-send" "m s" #'gptel-send
+        :desc "gptel-rewrite-menu" "m r" #'gptel-rewrite-menu
         ))
 
 ;; leetcode
