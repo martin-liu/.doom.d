@@ -314,15 +314,20 @@
     (setq codeium/document/text 'my-codeium/document/text)
     (setq codeium/document/cursor_offset 'my-codeium/document/cursor_offset))
 
-;; gptel
-(use-package! gptel
- :config
- (setq! gptel-model "gpt-4o"))
-(after! gptel
+;; aidermacs
+(use-package! aidermacs
+  :config
+  (setq aidermacs-backend 'vterm)
+  (setq aidermacs-vterm-multiline-newline-key "S-<return>")
+  (setq aidermacs-extra-args '("--no-show-model-warnings"))
+  :custom
+  ; See the Configuration section below
+  (aidermacs-use-architect-mode t)
+  (aidermacs-default-model "litellm_proxy/claude-3-7-sonnet")
+  (aidermacs-architect-model "litellm_proxy/claude-3-7-sonnet"))
+(after! aidermacs
   (map! :leader
-        :desc "gptel-menu" "m g" #'gptel-menu
-        :desc "gptel-send" "m s" #'gptel-send
-        :desc "gptel-rewrite-menu" "m r" #'gptel-rewrite-menu
+        :desc "aidermacs-transient-menu" "m a" #'aidermacs-transient-menu
         ))
 
 ;; leetcode

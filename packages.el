@@ -68,4 +68,4 @@
 ;; codedium
 (package! codeium :recipe (:host github :repo "Exafunction/codeium.el"))
 ;; llm
-(package! gptel)
+(package! aidermacs)
