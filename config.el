@@ -144,11 +144,13 @@
 
 ;; lsp
 (after! lsp-mode
-  (setq lsp-file-watch-ignored-directories (cons
-                                            "[/\\\\]\\.venv\\'"
-                                            (cons
-                                             "[/\\\\]\\venv\\'"
-                                             lsp-file-watch-ignored-directories))
+  (setq lsp-file-watch-ignored-directories (append
+                                            '("[/\\\\]\\.venv\\'"
+                                              "[/\\\\]\\venv\\'"
+                                              "[/\\\\]\\.aider.*\\'"
+                                              "[/\\\\]\\.tmp\\'"
+                                              "[/\\\\]\\.*cache\\'")
+                                            lsp-file-watch-ignored-directories)
         lsp-file-watch-threshold 2000
         ))
 
@@ -318,6 +320,7 @@
 (use-package! aidermacs
   :config
   (setq aidermacs-backend 'vterm)
+  (setq aidermacs-show-diff-after-change nil)
   (setq aidermacs-vterm-multiline-newline-key "S-<return>")
   (setq aidermacs-extra-args '("--no-show-model-warnings"))
   :custom
