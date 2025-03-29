@@ -327,7 +327,8 @@
   ; See the Configuration section below
   (aidermacs-use-architect-mode t)
   (aidermacs-default-model "litellm_proxy/claude-3-7-sonnet")
-  (aidermacs-architect-model "litellm_proxy/claude-3-7-sonnet"))
+  (aidermacs-editor-model "litellm_proxy/claude-3-7-sonnet")
+  (aidermacs-architect-model "litellm_proxy/deepseek-r1"))
 (after! aidermacs
   (map! :leader
         :desc "aidermacs-transient-menu" "m a" #'aidermacs-transient-menu
