@@ -67,7 +67,7 @@
  ;; dired
  dired-dwim-target t
  ;; project
- projectile-project-search-path '("~/src")
+ projectile-project-search-path '("~/martin/code/nand")
  ;; ein
  ein:output-area-inlined-images t
  ein:worksheet-enable-undo t
@@ -328,7 +328,7 @@
   (aidermacs-use-architect-mode t)
   (aidermacs-default-model "litellm_proxy/claude-3-7-sonnet")
   (aidermacs-editor-model "litellm_proxy/claude-3-7-sonnet")
-  (aidermacs-architect-model "litellm_proxy/deepseek-r1"))
+  (aidermacs-architect-model "litellm_proxy/claude-3-7-sonnet"))
 (after! aidermacs
   (map! :leader
         :desc "aidermacs-transient-menu" "m a" #'aidermacs-transient-menu
