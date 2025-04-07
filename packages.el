@@ -61,11 +61,9 @@
 (package! org-fragtog)
 (package! evil-matchit)
 (package! leetcode)
-;; copilot
-;; (package! copilot
-;;   :recipe (:host github :repo "zerolfx/copilot.el" :files ("*.el" "dist")))
 
-;; codedium
-(package! codeium :recipe (:host github :repo "Exafunction/codeium.el"))
-;; llm
+;; AI
+;; code completion
+(package! minuet)
+;; agent
 (package! aidermacs)

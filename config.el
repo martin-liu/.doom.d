@@ -240,81 +240,60 @@
 ;; fragtog auto do latex preview in org
 (after! org (add-hook 'org-mode-hook 'org-fragtog-mode))
 
-;; Github Copilot
-;; accept completion from copilot and fallback to company
-;; (use-package! copilot
-;;   :hook ((prog-mode . copilot-mode)
-;;          (org-mode . copilot-mode)
-;;          (markdown-mode . copilot-mode)
-;;          (gfm-mode . copilot-mode))
-;;   :bind (("s-TAB" . 'copilot-accept-completion-by-word)
-;;          ("s-<tab>" . 'copilot-accept-completion-by-word)
-;;          :map copilot-completion-map
-;;          ("<tab>" . 'copilot-accept-completion)
-;;          ("TAB" . 'copilot-accept-completion)))
-
-;; Codeium
-;; we recommend using use-package to organize your init.el
-(use-package! codeium
-    ;; if you use straight
-    ;; :straight '(:type git :host github :repo "Exafunction/codeium.el")
-    ;; otherwise, make sure that the codeium.el file is on load-path
+;; AI code completion
+(use-package! minuet
+    :bind
+    (("M-y" . #'minuet-complete-with-minibuffer) ;; use minibuffer for completion
+     ("M-i" . #'minuet-show-suggestion) ;; use overlay for completion
+     ("C-c m" . #'minuet-configure-provider)
+     :map minuet-active-mode-map
+     ;; These keymaps activate only when a minuet suggestion is displayed in the current buffer
+     ("M-p" . #'minuet-previous-suggestion) ;; invoke completion or cycle to next completion
+     ("M-n" . #'minuet-next-suggestion) ;; invoke completion or cycle to previous completion
+     ("M-A" . #'minuet-accept-suggestion) ;; accept whole completion
+     ;; Accept the first line of completion, or N lines with a numeric-prefix:
+     ;; e.g. C-u 2 M-a will accepts 2 lines of completion.
+     ("M-a" . #'minuet-accept-suggestion-line)
+     ("M-e" . #'minuet-dismiss-suggestion))
 
     :init
-    ;; use globally
-    (add-to-list 'completion-at-point-functions #'codeium-completion-at-point)
-    ;; or on a hook
-    ;; (add-hook 'python-mode-hook
-    ;;     (lambda ()
-    ;;         (setq-local completion-at-point-functions '(codeium-completion-at-point))))
+    ;; if you want to enable auto suggestion.
+    ;; Note that you can manually invoke completions without enable minuet-auto-suggestion-mode
+    ;; (add-hook 'prog-mode-hook #'minuet-auto-suggestion-mode)
+    (add-hook 'minuet-active-mode-hook #'evil-normalize-keymaps)
 
-    ;; if you want multiple completion backends, use cape (https://github.com/minad/cape):
-    ;; (add-hook 'python-mode-hook
-    ;;     (lambda ()
-    ;;         (setq-local completion-at-point-functions
-    ;;             (list (cape-super-capf #'codeium-completion-at-point #'lsp-completion-at-point)))))
-    ;; an async company-backend is coming soon!
-
-    ;; codeium-completion-at-point is autoloaded, but you can
-    ;; optionally set a timer, which might speed up things as the
-    ;; codeium local language server takes ~0.2s to start up
-    ;; (add-hook 'emacs-startup-hook
-    ;;  (lambda () (run-with-timer 0.1 nil #'codeium-init)))
-
-    ;; :defer t ;; lazy loading, if you want
     :config
-    (setq use-dialog-box nil) ;; do not use popup boxes
+    ;; You can use M-x minuet-configure-provider to interactively configure provider and model
+    (setq minuet-provider 'openai-fim-compatible)
+    (setq minuet-n-completions 1) ; recommended for Local LLM for resource saving
+    ;; I recommend beginning with a small context window size and incrementally
+    ;; expanding it, depending on your local computing power. A context window
+    ;; of 512, serves as an good starting point to estimate your computing
+    ;; power. Once you have a reliable estimate of your local computing power,
+    ;; you should adjust the context window to a larger value.
+    (setq minuet-context-window 1024)
+    (plist-put minuet-openai-fim-compatible-options :end-point "http://localhost:11434/v1/completions")
+    ;; an arbitrary non-null environment variable as placeholder
+    (plist-put minuet-openai-fim-compatible-options :name "Ollama")
+    (plist-put minuet-openai-fim-compatible-options :api-key "TERM")
+    (plist-put minuet-openai-fim-compatible-options :model "qwen2.5-coder:7b")
 
-    ;; if you don't want to use customize to save the api-key
-    ;; (setq codeium/metadata/api_key "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
+    (minuet-set-optional-options minuet-openai-fim-compatible-options :max_tokens 256)
+    (minuet-set-optional-options minuet-openai-fim-compatible-options :top_p 0.9))
 
-    ;; get codeium status in the modeline
-    (setq codeium-mode-line-enable
-        (lambda (api) (not (memq api '(CancelRequest Heartbeat AcceptCompletion)))))
-    (add-to-list 'mode-line-format '(:eval (car-safe codeium-mode-line)) t)
-    ;; alternatively for a more extensive mode-line
-    ;; (add-to-list 'mode-line-format '(-50 "" codeium-mode-line) t)
+    ;; For Evil users: When defining `minuet-ative-mode-map` in insert
+    ;; or normal states, the following one-liner is required.
 
-    ;; use M-x codeium-diagnose to see apis/fields that would be sent to the local language server
-    (setq codeium-api-enabled
-        (lambda (api)
-            (memq api '(GetCompletions Heartbeat CancelRequest GetAuthToken RegisterUser auth-redirect AcceptCompletion))))
-    ;; you can also set a config for a single buffer like this:
-    ;; (add-hook 'python-mode-hook
-    ;;     (lambda ()
-    ;;         (setq-local codeium/editor_options/tab_size 4)))
+    ;; (add-hook 'minuet-active-mode-hook #'evil-normalize-keymaps)
 
-    ;; You can overwrite all the codeium configs!
-    ;; for example, we recommend limiting the string sent to codeium for better performance
-    (defun my-codeium/document/text ()
-        (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (min (+ (point) 1000) (point-max))))
-    ;; if you change the text, you should also change the cursor_offset
-    ;; warning: this is measured by UTF-8 encoded bytes
-    (defun my-codeium/document/cursor_offset ()
-        (codeium-utf8-byte-length
-            (buffer-substring-no-properties (max (- (point) 3000) (point-min)) (point))))
-    (setq codeium/document/text 'my-codeium/document/text)
-    (setq codeium/document/cursor_offset 'my-codeium/document/cursor_offset))
+    ;; This is *not* necessary when defining `minuet-active-mode-map`.
+
+    ;; To minimize frequent overhead, it is recommended to avoid adding
+    ;; `evil-normalize-keymaps` to `minuet-active-mode-hook`. Instead,
+    ;; bind keybindings directly within `minuet-active-mode-map` using
+    ;; standard Emacs key sequences, such as `M-xxx`. This approach should
+    ;; not conflict with Evil's keybindings, as Evil primarily avoids
+    ;; using `M-xxx` bindings.
 
 ;; aidermacs
 (use-package! aidermacs
@@ -322,7 +301,7 @@
   (setq aidermacs-backend 'vterm)
   (setq aidermacs-show-diff-after-change nil)
   (setq aidermacs-vterm-multiline-newline-key "S-<return>")
-  (setq aidermacs-extra-args '("--no-show-model-warnings"))
+  (setq aidermacs-extra-args '("--no-show-model-warnings --no-auto-lint"))
   :custom
   ; See the Configuration section below
   (aidermacs-use-architect-mode t)
