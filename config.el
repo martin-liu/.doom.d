@@ -301,13 +301,14 @@
   (setq aidermacs-backend 'vterm)
   (setq aidermacs-show-diff-after-change nil)
   (setq aidermacs-vterm-multiline-newline-key "S-<return>")
-  (setq aidermacs-extra-args '("--no-show-model-warnings --no-auto-lint"))
+  (setq aidermacs-extra-args '("--no-show-model-warnings --no-auto-lint --thinking-tokens 3k"))
   :custom
   ; See the Configuration section below
   (aidermacs-use-architect-mode t)
   (aidermacs-default-model "litellm_proxy/claude-3-7-sonnet")
-  (aidermacs-editor-model "litellm_proxy/claude-3-7-sonnet")
-  (aidermacs-architect-model "litellm_proxy/claude-3-7-sonnet"))
+  (aidermacs-weak-model "litellm_proxy/gpt-4o")
+  (aidermacs-editor-model "litellm_proxy/claude-3-5-v2-sonnet")
+  (aidermacs-architect-model "litellm_proxy/claude-3-7-sonnet-thinking"))
 (after! aidermacs
   (map! :leader
         :desc "aidermacs-transient-menu" "m a" #'aidermacs-transient-menu
