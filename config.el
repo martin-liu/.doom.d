@@ -128,6 +128,7 @@
 (after! auth-source
   (pushnew! auth-sources "~/.netrc"))
 
+;; Python
 ;; autoload python virtual environments
 ;; https://github.com/jorgenschaefer/pyvenv/issues/51#issuecomment-474785730
 (defun pyvenv-autoload ()
@@ -142,6 +143,32 @@
 (add-hook 'projectile-after-switch-project-hook 'pyvenv-autoload)
 ;(add-hook 'doom-switch-buffer-hook 'pyvenv-autoload)
 
+;; Python Debug
+(defun dape-pytest-one-debug ()
+  (interactive)
+  (when-let* ((node (treesit-node-at (point)))
+              (func-node (treesit-node-top-level node "function_definition"))
+              (func-name (treesit-node-text (treesit-node-child-by-field-name func-node "name") t))
+              (test-path (concat "::" func-name)))
+
+    ;; if in class, add class name
+    (let ((class-node (treesit-node-top-level node "class_definition")))
+      (when class-node
+        (let ((class-name (treesit-node-text (treesit-node-child-by-field-name class-node "name") t)))
+          (setq test-path (concat "::" class-name test-path)))))
+
+    (let* ((cwd (dape-cwd))
+           (rel-path (file-relative-name buffer-file-name cwd))
+           (full-test-path (concat rel-path test-path))
+           (conf (alist-get 'debugpy-module dape-configs)))
+      (cl-callf plist-put conf :module "pytest")
+      (cl-callf plist-put conf :args (vector full-test-path))
+      (cl-callf plist-put conf :cwd cwd)
+      (dape conf))))
+(map! :leader
+      :desc "dape-pytest-one-debug"
+      "m d" #'dape-pytest-one-debug)
+
 ;; lsp
 (after! lsp-mode
   (setq lsp-file-watch-ignored-directories (append
@@ -154,69 +181,9 @@
         lsp-file-watch-threshold 2000
         ))
 
-;; dap mode for debugger
-(after! dap-mode
-  (setq dap-python-debugger 'debugpy
-        ;; add `justMyCode: false' to debugpy, so that it will step in libirary code
-        dap-debug-template-configurations (mapcar
-                                           (lambda (conf)
-                                             (progn
-                                               (add-to-list 'conf :justMyCode t)
-                                               (add-to-list 'conf :json-false t))
-                                             )
-                                           dap-debug-template-configurations)
-        ))
-
-; override dap python function to ensure venv works
-(after! dap-python
-  (defun dap-python--pyenv-executable-find (command) (executable-find command)))
-
 ; Astro
 ;; use rjsx-mode for .astro files
 (add-to-list 'auto-mode-alist '("\\.astro\\'" . rjsx-mode))
-
-; Rust
-(after! dap-mode
-  (map! :map dap-mode-map
-        :leader
-        :prefix ("d" . "dap")
-        ;; basics
-        :desc "dap next"          "n" #'dap-next
-        :desc "dap step in"       "i" #'dap-step-in
-        :desc "dap step out"      "o" #'dap-step-out
-        :desc "dap continue"      "c" #'dap-continue
-        :desc "dap hydra"         "h" #'dap-hydra
-        :desc "dap debug restart" "r" #'dap-debug-restart
-        :desc "dap debug"         "s" #'dap-debug
-
-        ;; debug
-        :prefix ("dd" . "Debug")
-        :desc "dap debug recent"  "r" #'dap-debug-recent
-        :desc "dap debug last"    "l" #'dap-debug-last
-
-        ;; eval
-        :prefix ("de" . "Eval")
-        :desc "eval"                "e" #'dap-eval
-        :desc "eval region"         "r" #'dap-eval-region
-        :desc "eval thing at point" "s" #'dap-eval-thing-at-point
-        :desc "add expression"      "a" #'dap-ui-expressions-add
-        :desc "remove expression"   "d" #'dap-ui-expressions-remove
-
-        :prefix ("db" . "Breakpoint")
-        :desc "dap breakpoint toggle"      "b" #'dap-breakpoint-toggle
-        :desc "dap breakpoint condition"   "c" #'dap-breakpoint-condition
-        :desc "dap breakpoint hit count"   "h" #'dap-breakpoint-hit-condition
-        :desc "dap breakpoint log message" "l" #'dap-breakpoint-log-message)
-
-  ;; (require 'dap-codelldb)
-  ;; (dap-codelldb-setup)
-  ;; (dap-register-debug-template "Rust::CodeLLDB Run Configuration"
-  ;;                              (list :type "lldb"
-  ;;                                    :request "launch"
-  ;;                                    :name "CodeLLDB::Run"
-  ;;                                    :program ""
-  ;;                                    :cargo (list :args '("test" "--no-run"))))
-  )
 
 ;; markdown
 (map! :map markdown-mode-map
@@ -243,8 +210,7 @@
 ;; AI code completion
 (use-package! minuet
     :bind
-    (("M-y" . #'minuet-complete-with-minibuffer) ;; use minibuffer for completion
-     ("M-i" . #'minuet-show-suggestion) ;; use overlay for completion
+    (("M-i" . #'minuet-show-suggestion) ;; use overlay for completion
      ("C-c m" . #'minuet-configure-provider)
      :map minuet-active-mode-map
      ;; These keymaps activate only when a minuet suggestion is displayed in the current buffer
@@ -259,27 +225,17 @@
     :init
     ;; if you want to enable auto suggestion.
     ;; Note that you can manually invoke completions without enable minuet-auto-suggestion-mode
-    ;; (add-hook 'prog-mode-hook #'minuet-auto-suggestion-mode)
     (add-hook 'minuet-active-mode-hook #'evil-normalize-keymaps)
+    (add-hook 'prog-mode-hook #'minuet-auto-suggestion-mode)
 
     :config
     ;; You can use M-x minuet-configure-provider to interactively configure provider and model
-    (setq minuet-provider 'openai-fim-compatible)
-    (setq minuet-n-completions 1) ; recommended for Local LLM for resource saving
-    ;; I recommend beginning with a small context window size and incrementally
-    ;; expanding it, depending on your local computing power. A context window
-    ;; of 512, serves as an good starting point to estimate your computing
-    ;; power. Once you have a reliable estimate of your local computing power,
-    ;; you should adjust the context window to a larger value.
-    (setq minuet-context-window 1024)
-    (plist-put minuet-openai-fim-compatible-options :end-point "http://localhost:11434/v1/completions")
-    ;; an arbitrary non-null environment variable as placeholder
-    (plist-put minuet-openai-fim-compatible-options :name "Ollama")
-    (plist-put minuet-openai-fim-compatible-options :api-key "TERM")
-    (plist-put minuet-openai-fim-compatible-options :model "qwen2.5-coder:7b")
-
-    (minuet-set-optional-options minuet-openai-fim-compatible-options :max_tokens 256)
-    (minuet-set-optional-options minuet-openai-fim-compatible-options :top_p 0.9))
+    (setq minuet-provider 'openai-compatible)
+    (plist-put minuet-openai-compatible-options :end-point "https://llmgateway.app.nand.ai/v1/chat/completions")
+    (plist-put minuet-openai-compatible-options :api-key "LITELLM_PROXY_API_KEY")
+    (plist-put minuet-openai-compatible-options :model "gpt-4.1-mini")
+    (minuet-set-optional-options minuet-openai-compatible-options :max_tokens 256)
+    (minuet-set-optional-options minuet-openai-compatible-options :top_p 0.9))
 
     ;; For Evil users: When defining `minuet-ative-mode-map` in insert
     ;; or normal states, the following one-liner is required.
@@ -318,7 +274,6 @@
 (setq leetcode-prefer-language "python3")
 (setq leetcode-save-solutions t)
 (setq leetcode-directory "~/martin/code/my/leetcode/leetcode/")
-
 
 ;; pdf view
 (defun pdf-view-zoom-center ()

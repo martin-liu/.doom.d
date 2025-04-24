@@ -50,17 +50,17 @@
 ;(unpin! t)
 
 ;; override doom's package pinning
-(unpin! pdf-tools code-review)
+;;(unpin! pdf-tools code-review)
 
 ;; override doom's package recipe
-(package! protobuf-mode :recipe (:nonrecursive t))
+;; (package! protobuf-mode :recipe (:nonrecursive t))
 
 ;; Custom packages
 (package! frog-jump-buffer)
-(package! protobuf-mode)
+;; (package! protobuf-mode)
 (package! org-fragtog)
 (package! evil-matchit)
-(package! leetcode)
+;;(package! leetcode)
 
 ;; AI
 ;; code completion
