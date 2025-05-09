@@ -257,7 +257,7 @@
   (setq aidermacs-backend 'vterm)
   (setq aidermacs-show-diff-after-change nil)
   (setq aidermacs-vterm-multiline-newline-key "S-<return>")
-  (setq aidermacs-extra-args '("--model-metadata-file=~/.aider.model.metadata.json --no-show-model-warnings --no-auto-lint --thinking-tokens 32k"))
+  (setq aidermacs-extra-args '("--model-metadata-file=~/.aider.model.metadata.json --timeout=1200 --no-show-model-warnings --no-auto-lint --thinking-tokens 32k"))
   :custom
   ; See the Configuration section below
   (aidermacs-use-architect-mode t)
