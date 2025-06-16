@@ -197,6 +197,7 @@
                   org-tag-alist '(("@work" . ?w) ("@me" . ?m))
                   org-capture-templates '(("t" "TODO" entry (file+headline "" "Tasks") "* TODO %?\n %i\n")
                                           ("n" "NOTE" entry (file+headline "" "Notes") "* NOTE - %?\n %i\n %a")
+                                          ("p" "Post" entry (file+datetree "~/Google Drive/My Drive/doc/posts.org") "* %U - %^{heading}\n%?")
                                           ("j" "Journal" entry (file+datetree "~/Google Drive/My Drive/doc/journal.org")
                                            "* %U - %^{heading}\n%?"))
                   org-roam-directory "~/martin/code/my/learning/notes/roam"
@@ -257,14 +258,22 @@
   (setq aidermacs-backend 'vterm)
   (setq aidermacs-show-diff-after-change nil)
   (setq aidermacs-vterm-multiline-newline-key "S-<return>")
-  (setq aidermacs-extra-args '("--model-metadata-file=~/.aider.model.metadata.json --timeout=1200 --no-show-model-warnings --no-auto-lint --thinking-tokens 32k"))
+  (setq aidermacs-extra-args '("--timeout=1200 --thinking-tokens 32k --model-metadata-file=~/.aider.model.metadata.json --no-show-model-warnings --no-auto-lint"))
   :custom
   ; See the Configuration section below
-  (aidermacs-use-architect-mode t)
-  (aidermacs-default-model "litellm_proxy/claude-3-7-sonnet")
+
+  ;; (aidermacs-default-chat-mode 'architect)
+  ;; (aidermacs-default-model "litellm_proxy/claude-4-sonnet")
+  ;; (aidermacs-weak-model "litellm_proxy/gpt-4.1")
+  ;; (aidermacs-editor-model "litellm_proxy/claude-4-sonnet")
+  ;; (aidermacs-architect-model "litellm_proxy/claude-4-sonnet-thinking"))
+
+  (aidermacs-default-chat-mode 'architect)
+  (aidermacs-default-model "litellm_proxy/gpt-4.1")
   (aidermacs-weak-model "litellm_proxy/gpt-4o")
-  (aidermacs-editor-model "litellm_proxy/claude-3-5-v2-sonnet")
-  (aidermacs-architect-model "litellm_proxy/claude-3-7-sonnet-thinking"))
+  (aidermacs-editor-model "litellm_proxy/gpt-4.1")
+  (aidermacs-architect-model "litellm_proxy/o3"))
+
 (after! aidermacs
   (map! :leader
         :desc "aidermacs-transient-menu" "m a" #'aidermacs-transient-menu
