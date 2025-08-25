@@ -253,30 +253,65 @@
     ;; using `M-xxx` bindings.
 
 ;; aidermacs
-(use-package! aidermacs
+;(use-package! aidermacs
+;  :config
+;  (setq aidermacs-backend 'vterm)
+;  (setq aidermacs-show-diff-after-change nil)
+;  (setq aidermacs-vterm-multiline-newline-key "S-<return>")
+;  (setq aidermacs-extra-args '("--timeout=1200 --thinking-tokens 32k --reasoning-effort high --model-metadata-file=~/.aider.model.metadata.json --no-show-model-warnings --no-auto-lint"))
+;  :custom
+;  ; See the Configuration section below
+;
+;  ;; (aidermacs-default-chat-mode 'architect)
+;  ;; (aidermacs-default-model "litellm_proxy/claude-4-sonnet")
+;  ;; (aidermacs-weak-model "litellm_proxy/gpt-4.1")
+;  ;; (aidermacs-editor-model "litellm_proxy/claude-4-sonnet")
+;  ;; (aidermacs-architect-model "litellm_proxy/claude-4-sonnet-thinking"))
+;
+;  (aidermacs-default-chat-mode 'architect)
+;  (aidermacs-default-model "gpt-4.1")
+;  (aidermacs-weak-model "gpt-4o")
+;  (aidermacs-editor-model "gpt-4.1")
+;  (aidermacs-architect-model "o3"))
+;
+;(after! aidermacs
+;  (map! :leader
+;        :desc "aidermacs-transient-menu" "m a" #'aidermacs-transient-menu
+;        ))
+(use-package! aider
   :config
-  (setq aidermacs-backend 'vterm)
-  (setq aidermacs-show-diff-after-change nil)
-  (setq aidermacs-vterm-multiline-newline-key "S-<return>")
-  (setq aidermacs-extra-args '("--timeout=1200 --thinking-tokens 32k --model-metadata-file=~/.aider.model.metadata.json --no-show-model-warnings --no-auto-lint"))
-  :custom
-  ; See the Configuration section below
-
-  ;; (aidermacs-default-chat-mode 'architect)
-  ;; (aidermacs-default-model "litellm_proxy/claude-4-sonnet")
-  ;; (aidermacs-weak-model "litellm_proxy/gpt-4.1")
-  ;; (aidermacs-editor-model "litellm_proxy/claude-4-sonnet")
-  ;; (aidermacs-architect-model "litellm_proxy/claude-4-sonnet-thinking"))
-
-  (aidermacs-default-chat-mode 'architect)
-  (aidermacs-default-model "litellm_proxy/gpt-4.1")
-  (aidermacs-weak-model "litellm_proxy/gpt-4o")
-  (aidermacs-editor-model "litellm_proxy/gpt-4.1")
-  (aidermacs-architect-model "litellm_proxy/o3"))
-
-(after! aidermacs
+  ;; For latest claude sonnet model
+  (setq aider-args '("--model=litellm_proxy/o3" "--timeout=1200" "--thinking-tokens=32k" "--reasoning-effort=high" "--model-metadata-file=~/.aider.model.metadata.json" "--no-show-model-warnings" "--no-auto-lint" "--no-auto-commits")) ;; add --no-auto-commits if you don't want it
+  ;; Or chatgpt model
+  ;; (setq aider-args '("--model" "o4-mini"))
+  ;; (setenv "OPENAI_API_KEY" <your-openai-api-key>)
+  ;; Or use your personal config file
+  ;; (setq aider-args `("--config" ,(expand-file-name "~/.aider.conf.yml")))
+  ;; ;;
+  ;; Optional: Set a key binding for the transient menu
+  ;; or use aider-transient-menu-2cols / aider-transient-menu-1col, for narrow screen
+  (aider-magit-setup-transients) ;; add aider magit function to magit menu
+  ;; auto revert buffer
+  (global-auto-revert-mode 1)
+  (auto-revert-mode 1))
+(after! aider
   (map! :leader
-        :desc "aidermacs-transient-menu" "m a" #'aidermacs-transient-menu
+        :desc "aidermacs-transient-menu" "m a" #'aider-transient-menu
+        ))
+
+;; claude-code
+(use-package claude-code-ide
+  :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
+  :config
+  (setq
+   claude-code-ide-cli-extra-flags "--model o3"
+   claude-code-ide-window-side 'bottom
+   claude-code-ide-focus-on-open nil
+   )
+  (claude-code-ide-emacs-tools-setup))
+(after! claude-code-ide
+  (map! :leader
+        :desc "claude-code-ide-menu" "m c" #'claude-code-ide-menu
         ))
 
 ;; leetcode

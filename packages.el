@@ -66,4 +66,5 @@
 ;; code completion
 (package! minuet)
 ;; agent
-(package! aidermacs)
+;;(package! aidermacs)
+(package! aider)
