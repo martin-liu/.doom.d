@@ -68,3 +68,7 @@
 ;; agent
 ;;(package! aidermacs)
 (package! aider)
+;;; agent-shell
+(package! shell-maker)
+(package! acp)
+(package! agent-shell)

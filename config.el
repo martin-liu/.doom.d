@@ -35,6 +35,8 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
 
+;; transparancy
+(set-frame-parameter (selected-frame) 'alpha '(88 . 88)) (add-to-list 'default-frame-alist '(alpha . (88 . 88)))
 
 ;; Here are some additional functions/macros that could help you configure Doom:
 ;;
@@ -281,7 +283,7 @@
 (use-package! aider
   :config
   ;; For latest claude sonnet model
-  (setq aider-args '("--model=litellm_proxy/o3" "--timeout=1200" "--thinking-tokens=32k" "--reasoning-effort=high" "--model-metadata-file=~/.aider.model.metadata.json" "--no-show-model-warnings" "--no-auto-lint" "--no-auto-commits")) ;; add --no-auto-commits if you don't want it
+  (setq aider-args '("--model=litellm_proxy/gpt-5" "--timeout=1200" "--thinking-tokens=32k" "--reasoning-effort=high" "--model-metadata-file=~/.aider.model.metadata.json" "--no-show-model-warnings" "--no-auto-lint" "--no-auto-commits")) ;; add --no-auto-commits if you don't want it
   ;; Or chatgpt model
   ;; (setq aider-args '("--model" "o4-mini"))
   ;; (setenv "OPENAI_API_KEY" <your-openai-api-key>)
@@ -304,7 +306,6 @@
   :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
   :config
   (setq
-   claude-code-ide-cli-extra-flags "--model o3"
    claude-code-ide-window-side 'bottom
    claude-code-ide-focus-on-open nil
    )
@@ -312,6 +313,22 @@
 (after! claude-code-ide
   (map! :leader
         :desc "claude-code-ide-menu" "m c" #'claude-code-ide-menu
+        ))
+;; agent-shell
+(require 'acp)
+(require 'agent-shell)
+(setq
+ agent-shell-file-completion-enabled t
+ agent-shell-display-action t
+ agent-shell-anthropic-claude-environment (agent-shell-make-environment-variables :inherit-env t))
+(after! agent-shell
+  (map! :leader
+        :desc "agent-shell-start-or-toggle" "z z" #'agent-shell
+        :desc "agent-shell-send-current-file" "z f" #'agent-shell-send-current-file
+        :desc "agent-shell-send-other-file" "z F" #'agent-shell-send-other-file
+        :desc "agent-shell-send-screenshot" "z s" #'agent-shell-send-screenshot
+        :desc "agent-shell-send-region" "z r" #'agent-shell-send-region
+        :desc "agent-shell-clear-buffer" "z C" #'agent-shell-clear-buffer
         ))
 
 ;; leetcode
