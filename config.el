@@ -131,6 +131,13 @@
   (pushnew! auth-sources "~/.netrc"))
 
 ;; Python
+;; use ruff as formatter for python
+(after! apheleia
+  (setf (alist-get 'python-mode apheleia-mode-alist)
+        '(ruff-isort ruff)
+        (alist-get 'python-ts-mode apheleia-mode-alist)
+        '(ruff-isort ruff)
+        ))
 ;; autoload python virtual environments
 ;; https://github.com/jorgenschaefer/pyvenv/issues/51#issuecomment-474785730
 (defun pyvenv-autoload ()
@@ -143,7 +150,7 @@
              ((f-exists? dotvenv-path) (pyvenv-activate dotvenv-path)))))))
 (add-hook 'python-mode-hook 'pyvenv-autoload)
 (add-hook 'projectile-after-switch-project-hook 'pyvenv-autoload)
-;(add-hook 'doom-switch-buffer-hook 'pyvenv-autoload)
+                                        ;(add-hook 'doom-switch-buffer-hook 'pyvenv-autoload)
 
 ;; Python Debug
 (defun dape-pytest-one-debug ()
@@ -183,7 +190,7 @@
         lsp-file-watch-threshold 2000
         ))
 
-; Astro
+                                        ; Astro
 ;; use rjsx-mode for .astro files
 (add-to-list 'auto-mode-alist '("\\.astro\\'" . rjsx-mode))
 
@@ -212,114 +219,81 @@
 
 ;; AI code completion
 (use-package! minuet
-    :bind
-    (("M-i" . #'minuet-show-suggestion) ;; use overlay for completion
-     ("C-c m" . #'minuet-configure-provider)
-     :map minuet-active-mode-map
-     ;; These keymaps activate only when a minuet suggestion is displayed in the current buffer
-     ("M-p" . #'minuet-previous-suggestion) ;; invoke completion or cycle to next completion
-     ("M-n" . #'minuet-next-suggestion) ;; invoke completion or cycle to previous completion
-     ("M-A" . #'minuet-accept-suggestion) ;; accept whole completion
-     ;; Accept the first line of completion, or N lines with a numeric-prefix:
-     ;; e.g. C-u 2 M-a will accepts 2 lines of completion.
-     ("M-a" . #'minuet-accept-suggestion-line)
-     ("M-e" . #'minuet-dismiss-suggestion))
+  :bind
+  (("M-i" . #'minuet-show-suggestion) ;; use overlay for completion
+   ("C-c m" . #'minuet-configure-provider)
+   :map minuet-active-mode-map
+   ;; These keymaps activate only when a minuet suggestion is displayed in the current buffer
+   ("M-p" . #'minuet-previous-suggestion) ;; invoke completion or cycle to next completion
+   ("M-n" . #'minuet-next-suggestion) ;; invoke completion or cycle to previous completion
+   ("M-A" . #'minuet-accept-suggestion) ;; accept whole completion
+   ;; Accept the first line of completion, or N lines with a numeric-prefix:
+   ;; e.g. C-u 2 M-a will accepts 2 lines of completion.
+   ("M-a" . #'minuet-accept-suggestion-line)
+   ("M-e" . #'minuet-dismiss-suggestion))
 
-    :init
-    ;; if you want to enable auto suggestion.
-    ;; Note that you can manually invoke completions without enable minuet-auto-suggestion-mode
-    (add-hook 'minuet-active-mode-hook #'evil-normalize-keymaps)
-    (add-hook 'prog-mode-hook #'minuet-auto-suggestion-mode)
+  :init
+  ;; if you want to enable auto suggestion.
+  ;; Note that you can manually invoke completions without enable minuet-auto-suggestion-mode
+  (add-hook 'minuet-active-mode-hook #'evil-normalize-keymaps)
+  (add-hook 'prog-mode-hook #'minuet-auto-suggestion-mode)
 
-    :config
-    ;; You can use M-x minuet-configure-provider to interactively configure provider and model
-    (setq minuet-provider 'openai-compatible)
-    (plist-put minuet-openai-compatible-options :end-point "https://llmgateway.app.nand.ai/v1/chat/completions")
-    (plist-put minuet-openai-compatible-options :api-key "LITELLM_PROXY_API_KEY")
-    (plist-put minuet-openai-compatible-options :model "gpt-4.1-mini")
-    (minuet-set-optional-options minuet-openai-compatible-options :max_tokens 256)
-    (minuet-set-optional-options minuet-openai-compatible-options :top_p 0.9))
-
-    ;; For Evil users: When defining `minuet-ative-mode-map` in insert
-    ;; or normal states, the following one-liner is required.
-
-    ;; (add-hook 'minuet-active-mode-hook #'evil-normalize-keymaps)
-
-    ;; This is *not* necessary when defining `minuet-active-mode-map`.
-
-    ;; To minimize frequent overhead, it is recommended to avoid adding
-    ;; `evil-normalize-keymaps` to `minuet-active-mode-hook`. Instead,
-    ;; bind keybindings directly within `minuet-active-mode-map` using
-    ;; standard Emacs key sequences, such as `M-xxx`. This approach should
-    ;; not conflict with Evil's keybindings, as Evil primarily avoids
-    ;; using `M-xxx` bindings.
-
-;; aidermacs
-;(use-package! aidermacs
-;  :config
-;  (setq aidermacs-backend 'vterm)
-;  (setq aidermacs-show-diff-after-change nil)
-;  (setq aidermacs-vterm-multiline-newline-key "S-<return>")
-;  (setq aidermacs-extra-args '("--timeout=1200 --thinking-tokens 32k --reasoning-effort high --model-metadata-file=~/.aider.model.metadata.json --no-show-model-warnings --no-auto-lint"))
-;  :custom
-;  ; See the Configuration section below
-;
-;  ;; (aidermacs-default-chat-mode 'architect)
-;  ;; (aidermacs-default-model "litellm_proxy/claude-4-sonnet")
-;  ;; (aidermacs-weak-model "litellm_proxy/gpt-4.1")
-;  ;; (aidermacs-editor-model "litellm_proxy/claude-4-sonnet")
-;  ;; (aidermacs-architect-model "litellm_proxy/claude-4-sonnet-thinking"))
-;
-;  (aidermacs-default-chat-mode 'architect)
-;  (aidermacs-default-model "gpt-4.1")
-;  (aidermacs-weak-model "gpt-4o")
-;  (aidermacs-editor-model "gpt-4.1")
-;  (aidermacs-architect-model "o3"))
-;
-;(after! aidermacs
-;  (map! :leader
-;        :desc "aidermacs-transient-menu" "m a" #'aidermacs-transient-menu
-;        ))
-(use-package! aider
   :config
-  ;; For latest claude sonnet model
-  (setq aider-args '("--model=litellm_proxy/gpt-5" "--timeout=1200" "--thinking-tokens=32k" "--reasoning-effort=high" "--model-metadata-file=~/.aider.model.metadata.json" "--no-show-model-warnings" "--no-auto-lint" "--no-auto-commits")) ;; add --no-auto-commits if you don't want it
-  ;; Or chatgpt model
-  ;; (setq aider-args '("--model" "o4-mini"))
-  ;; (setenv "OPENAI_API_KEY" <your-openai-api-key>)
-  ;; Or use your personal config file
-  ;; (setq aider-args `("--config" ,(expand-file-name "~/.aider.conf.yml")))
-  ;; ;;
-  ;; Optional: Set a key binding for the transient menu
-  ;; or use aider-transient-menu-2cols / aider-transient-menu-1col, for narrow screen
-  (aider-magit-setup-transients) ;; add aider magit function to magit menu
-  ;; auto revert buffer
-  (global-auto-revert-mode 1)
-  (auto-revert-mode 1))
-(after! aider
-  (map! :leader
-        :desc "aidermacs-transient-menu" "m a" #'aider-transient-menu
-        ))
+  ;; You can use M-x minuet-configure-provider to interactively configure provider and model
+  (setq minuet-provider 'openai-compatible)
+  (plist-put minuet-openai-compatible-options :end-point "https://llmgateway.app.nand.ai/v1/chat/completions")
+  (plist-put minuet-openai-compatible-options :api-key "LITELLM_PROXY_API_KEY")
+  (plist-put minuet-openai-compatible-options :model "gpt-4.1-mini")
+  (minuet-set-optional-options minuet-openai-compatible-options :max_tokens 256)
+  (minuet-set-optional-options minuet-openai-compatible-options :top_p 0.9))
 
-;; claude-code
-(use-package claude-code-ide
-  :vc (:url "https://github.com/manzaltu/claude-code-ide.el" :rev :newest)
-  :config
-  (setq
-   claude-code-ide-window-side 'bottom
-   claude-code-ide-focus-on-open nil
-   )
-  (claude-code-ide-emacs-tools-setup))
-(after! claude-code-ide
-  (map! :leader
-        :desc "claude-code-ide-menu" "m c" #'claude-code-ide-menu
-        ))
+;; For Evil users: When defining `minuet-ative-mode-map` in insert
+;; or normal states, the following one-liner is required.
+
+;; (add-hook 'minuet-active-mode-hook #'evil-normalize-keymaps)
+
+;; This is *not* necessary when defining `minuet-active-mode-map`.
+
+;; To minimize frequent overhead, it is recommended to avoid adding
+;; `evil-normalize-keymaps` to `minuet-active-mode-hook`. Instead,
+;; bind keybindings directly within `minuet-active-mode-map` using
+;; standard Emacs key sequences, such as `M-xxx`. This approach should
+;; not conflict with Evil's keybindings, as Evil primarily avoids
+;; using `M-xxx` bindings.
+
 ;; agent-shell
 (require 'acp)
 (require 'agent-shell)
+;; TODO: remove this override when upstream (shell-maker or emacs 31?) fixed the crash problem
+;; not sure if it's a real bug or because I am using dev version of emacs 31
+(defun markdown-overlays--fontify-bold (start end text-start text-end)
+  "Fontify a markdown bold.
+Use START END TEXT-START TEXT-END.
+Patched to avoid crashes when text-start or text-end are nil."
+  (when (and (integer-or-marker-p start)
+             (integer-or-marker-p end)
+             (integer-or-marker-p text-start)
+             (integer-or-marker-p text-end))
+    ;; Hide markup before
+    (markdown-overlays--put
+     (make-overlay start text-start)
+     'evaporate t
+     'invisible 't)
+    ;; Show title as bold
+    (markdown-overlays--put
+     (make-overlay text-start text-end)
+     'evaporate t
+     'face 'bold)
+    ;; Hide markup after
+    (markdown-overlays--put
+     (make-overlay text-end end)
+     'evaporate t
+     'invisible 't)))
 (setq
  agent-shell-file-completion-enabled t
  agent-shell-display-action t
+ agent-shell-anthropic-default-session-mode-id "acceptEdits"
+ agent-shell--transcript-file-path-function 'agent-shell--default-transcript-file-path
  agent-shell-anthropic-claude-environment (agent-shell-make-environment-variables :inherit-env t))
 (after! agent-shell
   (map! :leader
@@ -329,6 +303,7 @@
         :desc "agent-shell-send-screenshot" "z s" #'agent-shell-send-screenshot
         :desc "agent-shell-send-region" "z r" #'agent-shell-send-region
         :desc "agent-shell-clear-buffer" "z C" #'agent-shell-clear-buffer
+        :desc "agent-shell-cycle-session-mode" "z m" #'agent-shell-cycle-session-mode
         ))
 
 ;; leetcode
