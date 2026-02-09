@@ -292,8 +292,8 @@ Patched to avoid crashes when text-start or text-end are nil."
 (setq
  agent-shell-file-completion-enabled t
  agent-shell-display-action t
+ agent-shell-anthropic-default-model-id "us.anthropic.claude-opus-4-6-v1"
  agent-shell-anthropic-default-session-mode-id "acceptEdits"
- agent-shell--transcript-file-path-function 'agent-shell--default-transcript-file-path
  agent-shell-anthropic-claude-environment (agent-shell-make-environment-variables :inherit-env t))
 (after! agent-shell
   (map! :leader
