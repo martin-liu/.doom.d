@@ -61,6 +61,7 @@
 (package! org-fragtog)
 (package! evil-matchit)
 ;;(package! leetcode)
+(package! just-mode)
 
 ;; AI
 ;; code completion

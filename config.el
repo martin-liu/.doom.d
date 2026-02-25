@@ -217,6 +217,10 @@
 ;; fragtog auto do latex preview in org
 (after! org (add-hook 'org-mode-hook 'org-fragtog-mode))
 
+;; just
+(use-package! just-mode
+  :mode "\\.just\\'")
+
 ;; AI code completion
 (use-package! minuet
   :bind
@@ -292,7 +296,7 @@ Patched to avoid crashes when text-start or text-end are nil."
 (setq
  agent-shell-file-completion-enabled t
  agent-shell-display-action t
- agent-shell-anthropic-default-model-id "us.anthropic.claude-opus-4-6-v1"
+ agent-shell-anthropic-default-model-id "us.anthropic.claude-opus-4-5-20251101-v1:0";"us.anthropic.claude-opus-4-6-v1"
  agent-shell-anthropic-default-session-mode-id "acceptEdits"
  agent-shell-anthropic-claude-environment (agent-shell-make-environment-variables :inherit-env t))
 (after! agent-shell
