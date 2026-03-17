@@ -296,7 +296,12 @@ Patched to avoid crashes when text-start or text-end are nil."
 (setq
  agent-shell-file-completion-enabled t
  agent-shell-display-action t
- agent-shell-anthropic-default-model-id "us.anthropic.claude-opus-4-5-20251101-v1:0";"us.anthropic.claude-opus-4-6-v1"
+ ;; opencode
+ agent-shell-opencode-default-model-id "azure-openai/gpt-5.4";"azure-kimi/Kimi-K2.5"
+ agent-shell-opencode-default-session-mode-id "control"
+ agent-shell-opencode-environment (agent-shell-make-environment-variables :inherit-env t)
+ ;; anthropic
+ agent-shell-anthropic-default-model-id "us.anthropic.claude-opus-4-6-v1";"us.anthropic.claude-opus-4-5-20251101-v1:0"
  agent-shell-anthropic-default-session-mode-id "acceptEdits"
  agent-shell-anthropic-claude-environment (agent-shell-make-environment-variables :inherit-env t))
 (after! agent-shell
