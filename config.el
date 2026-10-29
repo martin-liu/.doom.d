@@ -75,10 +75,47 @@
  ein:worksheet-enable-undo t
  ;; for jupyterlab > 3.0, this should be set to "notebook" when using notebook
  ein:jupyter-server-use-subcommand "server"
+ ;; eglot
+ file-notify-verbose nil
+ flycheck-checker-error-threshold 2000
+ eglot-watch-files-outside-project-root nil
+ eglot-ignored-server-capabilities '(:workspace/didChangeWatchedFiles)
  ;; others
  create-lockfiles nil
  debug-on-error t)
 (menu-bar-mode -1)
+
+;;; eglot / TypeScript
+;; Use TypeScript 7's built-in native language server (`tsc --lsp --stdio`)
+;; instead of the JavaScript `typescript-language-server`. TS 7 ships a native
+;; Go server; it supports pull diagnostics (`textDocument/diagnostic`), which
+;; eglot handles. No `typescript` JS package / `tsserver.js` is required.
+;;
+;; The server binary is a stable symlink managed at:
+;;   ~/.local/lib/typescript-native -> the installed
+;;   @typescript/typescript-<os>-<arch> platform package (pnpm).
+;; Re-point it after a TypeScript upgrade with:
+;;   ~/.doom.d/bin/typescript-native-link.sh
+;; (It searches pnpm's global store and links the newest matching package.)
+(after! eglot
+  (defvar my/eglot-ts-native-command
+    (expand-file-name "~/.local/lib/typescript-native/lib/tsc")
+    "Path to the TypeScript 7 native binary used as an LSP server for eglot.")
+  (defvar my/eglot-ts-native-args '("--lsp" "--stdio")
+    "Command-line arguments passed to the TS 7 native LSP server.")
+  (let* ((ts-modes '(typescript-mode typescript-ts-mode tsx-ts-mode))
+         (entry (append (list ts-modes)
+                        (list my/eglot-ts-native-command)
+                        my/eglot-ts-native-args)))
+    ;; Drop any existing entry covering these modes so ours wins the lookup:
+    ;; eglot returns on the first matching entry in `eglot-server-programs'.
+    (setq eglot-server-programs
+          (seq-remove
+           (lambda (existing)
+             (seq-some (lambda (m) (memq m (eglot--ensure-list (car existing))))
+                       ts-modes))
+           eglot-server-programs))
+    (push entry eglot-server-programs)))
 
 ;;; Keys
 (global-set-key (kbd "M-`") 'evil-escape)
@@ -222,34 +259,34 @@
   :mode "\\.just\\'")
 
 ;; AI code completion
-(use-package! minuet
-  :bind
-  (("M-i" . #'minuet-show-suggestion) ;; use overlay for completion
-   ("C-c m" . #'minuet-configure-provider)
-   :map minuet-active-mode-map
-   ;; These keymaps activate only when a minuet suggestion is displayed in the current buffer
-   ("M-p" . #'minuet-previous-suggestion) ;; invoke completion or cycle to next completion
-   ("M-n" . #'minuet-next-suggestion) ;; invoke completion or cycle to previous completion
-   ("M-A" . #'minuet-accept-suggestion) ;; accept whole completion
-   ;; Accept the first line of completion, or N lines with a numeric-prefix:
-   ;; e.g. C-u 2 M-a will accepts 2 lines of completion.
-   ("M-a" . #'minuet-accept-suggestion-line)
-   ("M-e" . #'minuet-dismiss-suggestion))
+;; (use-package! minuet
+;;   :bind
+;;   (("M-i" . #'minuet-show-suggestion) ;; use overlay for completion
+;;    ("C-c m" . #'minuet-configure-provider)
+;;    :map minuet-active-mode-map
+;;    ;; These keymaps activate only when a minuet suggestion is displayed in the current buffer
+;;    ("M-p" . #'minuet-previous-suggestion) ;; invoke completion or cycle to next completion
+;;    ("M-n" . #'minuet-next-suggestion) ;; invoke completion or cycle to previous completion
+;;    ("M-A" . #'minuet-accept-suggestion) ;; accept whole completion
+;;    ;; Accept the first line of completion, or N lines with a numeric-prefix:
+;;    ;; e.g. C-u 2 M-a will accepts 2 lines of completion.
+;;    ("M-a" . #'minuet-accept-suggestion-line)
+;;    ("M-e" . #'minuet-dismiss-suggestion))
 
-  :init
-  ;; if you want to enable auto suggestion.
-  ;; Note that you can manually invoke completions without enable minuet-auto-suggestion-mode
-  (add-hook 'minuet-active-mode-hook #'evil-normalize-keymaps)
-  (add-hook 'prog-mode-hook #'minuet-auto-suggestion-mode)
+;;   :init
+;;   ;; if you want to enable auto suggestion.
+;;   ;; Note that you can manually invoke completions without enable minuet-auto-suggestion-mode
+;;   (add-hook 'minuet-active-mode-hook #'evil-normalize-keymaps)
+;;   (add-hook 'prog-mode-hook #'minuet-auto-suggestion-mode)
 
-  :config
-  ;; You can use M-x minuet-configure-provider to interactively configure provider and model
-  (setq minuet-provider 'openai-compatible)
-  (plist-put minuet-openai-compatible-options :end-point "https://llmgateway.app.nand.ai/v1/chat/completions")
-  (plist-put minuet-openai-compatible-options :api-key "LITELLM_PROXY_API_KEY")
-  (plist-put minuet-openai-compatible-options :model "gpt-4.1-mini")
-  (minuet-set-optional-options minuet-openai-compatible-options :max_tokens 256)
-  (minuet-set-optional-options minuet-openai-compatible-options :top_p 0.9))
+;;   :config
+;;   ;; You can use M-x minuet-configure-provider to interactively configure provider and model
+;;   (setq minuet-provider 'openai-compatible)
+;;   (plist-put minuet-openai-compatible-options :end-point "https://llmgateway.app.nand.ai/v1/chat/completions")
+;;   (plist-put minuet-openai-compatible-options :api-key "LITELLM_PROXY_API_KEY")
+;;   (plist-put minuet-openai-compatible-options :model "gpt-5.6-luna")
+;;   (minuet-set-optional-options minuet-openai-compatible-options :max_tokens 256)
+;;   (minuet-set-optional-options minuet-openai-compatible-options :top_p 0.9))
 
 ;; For Evil users: When defining `minuet-ative-mode-map` in insert
 ;; or normal states, the following one-liner is required.
@@ -268,40 +305,15 @@
 ;; agent-shell
 (require 'acp)
 (require 'agent-shell)
-;; TODO: remove this override when upstream (shell-maker or emacs 31?) fixed the crash problem
-;; not sure if it's a real bug or because I am using dev version of emacs 31
-(defun markdown-overlays--fontify-bold (start end text-start text-end)
-  "Fontify a markdown bold.
-Use START END TEXT-START TEXT-END.
-Patched to avoid crashes when text-start or text-end are nil."
-  (when (and (integer-or-marker-p start)
-             (integer-or-marker-p end)
-             (integer-or-marker-p text-start)
-             (integer-or-marker-p text-end))
-    ;; Hide markup before
-    (markdown-overlays--put
-     (make-overlay start text-start)
-     'evaporate t
-     'invisible 't)
-    ;; Show title as bold
-    (markdown-overlays--put
-     (make-overlay text-start text-end)
-     'evaporate t
-     'face 'bold)
-    ;; Hide markup after
-    (markdown-overlays--put
-     (make-overlay text-end end)
-     'evaporate t
-     'invisible 't)))
 (setq
  agent-shell-file-completion-enabled t
  agent-shell-display-action t
+ ;; pi
+ agent-shell-pi-environment (agent-shell-make-environment-variables :inherit-env t)
  ;; opencode
- agent-shell-opencode-default-model-id "azure-kimi/Kimi-K2.5"
- agent-shell-opencode-default-session-mode-id "coder"
  agent-shell-opencode-environment (agent-shell-make-environment-variables :inherit-env t)
  ;; anthropic
- agent-shell-anthropic-default-model-id "us.anthropic.claude-opus-4-6-v1";"us.anthropic.claude-opus-4-5-20251101-v1:0"
+ agent-shell-anthropic-default-model-id "opusplan";"us.anthropic.claude-opus-4-6-v1";"us.anthropic.claude-opus-4-5-20251101-v1:0"
  agent-shell-anthropic-default-session-mode-id "acceptEdits"
  agent-shell-anthropic-claude-environment (agent-shell-make-environment-variables :inherit-env t))
 (after! agent-shell
